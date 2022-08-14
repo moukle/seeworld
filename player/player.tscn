@@ -1,0 +1,75 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://player/movement.gd" type="Script" id=1]
+[ext_resource path="res://player/model.png" type="Texture" id=2]
+[ext_resource path="res://player/player.gd" type="Script" id=3]
+
+[sub_resource type="GDScript" id=3]
+script/source = "extends Node
+
+
+# Declare member variables here. Examples:
+# var a = 2
+# var b = \"text\"
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+#func _process(delta):
+#	pass
+"
+
+[sub_resource type="AtlasTexture" id=2]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 19, 20, 59, 59 )
+
+[sub_resource type="AtlasTexture" id=4]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 213, 42, 25, 14 )
+
+[sub_resource type="CircleShape2D" id=1]
+
+[node name="Player" type="Node2D"]
+script = ExtResource( 3 )
+
+[node name="Model" type="Node2D" parent="."]
+scale = Vector2( 1.75, 1.75 )
+script = SubResource( 3 )
+
+[node name="Body" type="Sprite" parent="Model"]
+texture = SubResource( 2 )
+
+[node name="FootLeft" type="Sprite" parent="Model"]
+position = Vector2( 15.4286, 24 )
+texture = SubResource( 4 )
+
+[node name="FootRight" type="Sprite" parent="Model"]
+position = Vector2( -14.2857, 24.5714 )
+texture = SubResource( 4 )
+
+[node name="Physics" type="Node" parent="."]
+
+[node name="Body" type="KinematicBody2D" parent="Physics"]
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Physics/Body"]
+scale = Vector2( 5, 5 )
+shape = SubResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+__meta__ = {
+"_edit_lock_": true
+}
