@@ -9,13 +9,31 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "KinematicBody2D",
+"base": "Node2D",
+"class": "Hook",
+"language": "GDScript",
+"path": "res://player/src/hook.gd"
+}, {
+"base": "Node2D",
+"class": "Hook2",
+"language": "GDScript",
+"path": "res://player/src/hook_rb-head.gd"
+}, {
+"base": "Node",
 "class": "Movement",
 "language": "GDScript",
-"path": "res://player/movement.gd"
+"path": "res://player/src/movement.gd"
+}, {
+"base": "Node2D",
+"class": "Player",
+"language": "GDScript",
+"path": "res://player/src/player.gd"
 } ]
 _global_script_class_icons={
-"Movement": ""
+"Hook": "",
+"Hook2": "",
+"Movement": "",
+"Player": ""
 }
 
 [application]
@@ -43,6 +61,11 @@ common/drop_mouse_on_gui_input_disabled=true
 +jump={
 "deadzone": 0.5,
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":87,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
+ ]
+}
++hook={
+"deadzone": 0.5,
+"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":2,"pressed":false,"doubleclick":false,"script":null)
  ]
 }
 
