@@ -2,6 +2,7 @@ extends Node2D
 class_name Player
 
 const cell_size: int = 128  # projectSetting: phys/2d/cell_size
+const tile_size: int = 64  # projectSetting: phys/2d/cell_size
 const physical_size: int = 50
 
 onready var physicalBody: KinematicBody2D = get_node("%Body")
@@ -12,12 +13,10 @@ export (int) var jump_speed = -13 * cell_size
 export (int) var air_jump_speed = -12 * cell_size
 export (float, 0, 1.0) var acceleration = 0.25
 
-export (int) var           hook_length = 380*2
-# export (int) var           hook_impulse = 2000
+export (int) var           hook_length = 12 * tile_size
 export (int) var           hook_fire_speed = 80*2
-# export (float, 0, 1.0) var hook_fire_acceleration = 0.3
 export (int) var           hook_drag_speed = 15*2
-export (int) var           hook_drag_acceleration = 1
+export (float, 0, 1.0) var hook_drag_acceleration = 1.0
 
 # inputs
 var move_left: bool

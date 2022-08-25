@@ -104,24 +104,25 @@ func pull_by_tw():
 	var pull_dir = (target_pos - pb.position).normalized()
 	var pull_angle = pull_dir.angle()
 	
-	var hook_vel = pull_dir * hook_drag_accel;
-	# the hook has more power to drag you up than down.
-	# this makes it easier to get on top of a platform
-	if(hook_vel.y > 0):
-		hook_vel.y = hook_vel.y * 0.3
+	if not target_node is Cube:
+		var hook_vel = pull_dir * hook_drag_accel;
+		# the hook has more power to drag you up than down.
+		# this makes it easier to get on top of a platform
+		if(hook_vel.y > 0):
+			hook_vel.y = hook_vel.y * 0.3
 
-	# the hook will boost it's power if the player wants to move
-	# in that direction. otherwise it will dampen everything abit
-	if((hook_vel.x < 0 && pull_angle < 0) || (hook_vel.x > 0 && pull_angle > 0)):
-		hook_vel.x *= 0.95;
-	else:
-		hook_vel.x *= 0.75;
+		# the hook will boost it's power if the player wants to move
+		# in that direction. otherwise it will dampen everything abit
+		if((hook_vel.x < 0 && pull_angle < 0) || (hook_vel.x > 0 && pull_angle > 0)):
+			hook_vel.x *= 0.95;
+		else:
+			hook_vel.x *= 0.75;
 
-	var new_vel = p.velocity + hook_vel;
+		var new_vel = p.velocity + hook_vel;
 
-	# check if we are under the legal limit for the hook
-	if(new_vel.length() < hook_drag_speed or new_vel.length() < p.velocity.length()):
-		p.velocity = new_vel # no problem. apply
+		# check if we are under the legal limit for the hook
+		if(new_vel.length() < hook_drag_speed or new_vel.length() < p.velocity.length()):
+			p.velocity = new_vel # no problem. apply
 	
 		
 	# handle hook influence
@@ -135,11 +136,10 @@ func pull_by_tw():
 
 			# add force to the hooked player
 			var tmp: Vector2
-			tmp = hook_accel * -pull_dir * 1.5 * 128
+			tmp = hook_accel * pull_dir * 1.5 * 128
 			tmp.x = clamp(tmp.x, -drag_speed, drag_speed)
 			tmp.y = clamp(tmp.y, -drag_speed, drag_speed)
-			print(tmp.y)
-			cube.velocity += tmp
+			cube.velocity -= tmp
 
 			# add a little bit force to the guy who has the grip
 			tmp /= 6
