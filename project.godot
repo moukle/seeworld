@@ -12,7 +12,7 @@ _global_script_classes=[ {
 "base": "KinematicBody2D",
 "class": "Cube",
 "language": "GDScript",
-"path": "res://map/cube.gd"
+"path": "res://map/src/cube.gd"
 }, {
 "base": "Node2D",
 "class": "Hook",
@@ -22,7 +22,7 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "Map",
 "language": "GDScript",
-"path": "res://map/map.gd"
+"path": "res://map/src/map.gd"
 }, {
 "base": "Node",
 "class": "Movement",
