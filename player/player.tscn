@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://player/src/movement.gd" type="Script" id=1]
-[ext_resource path="res://player/model.png" type="Texture" id=2]
+[ext_resource path="res://player/textures/model.png" type="Texture" id=2]
 [ext_resource path="res://player/src/player.gd" type="Script" id=3]
 [ext_resource path="res://player/src/hook.gd" type="Script" id=4]
 [ext_resource path="res://player/src/foot.gd" type="Script" id=6]
