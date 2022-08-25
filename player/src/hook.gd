@@ -7,9 +7,8 @@ onready var p: Player = get_node("../..")
 
 var hooking: bool = false
 var shooting: bool = false
+var retracting: bool = false
 var connected: bool = false
-var retract_hook: bool = false
-
 
 var target_pos: Vector2
 var target_node: Node
@@ -32,45 +31,45 @@ func _physics_process(delta):
 	elif connected:
 		if not target_node.is_in_group("TileMap"):
 			target_pos = target_node.position
-		
 		# pull_by_interpolation()
 		# pull_by_joint()
 		pull_by_tw()
+
 
 func _process(delta):
 	update()
 
 
 func _draw():
-	if connected:
+	if connected or shooting:
 		draw_hook()
 
 
 func shoot_hook():
 	# init
+	var new_target: Vector2
 	if not shooting:
 		dir = p.mouse_direction
 		shooting = true
 		hooking = true
-		retract_hook = false
+		retracting = false
 		
 		ray_cast = RayCast2D.new()
 		ray_cast.enabled = true
-		ray_cast.cast_to = dir * 1.5 * p.physical_size;
+		new_target = dir * 1.5 * p.physical_size;
 		add_child(ray_cast)
-	elif not retract_hook:
-		var new_target = ray_cast.cast_to + dir * p.hook_fire_speed
+	elif shooting and not retracting:
+		new_target = ray_cast.cast_to + dir * p.hook_fire_speed
 		if new_target.length() > p.hook_length:
 			new_target = dir * p.hook_length
-			retract_hook = true
-		ray_cast.cast_to = new_target
-	"""
-	elif retract_hook:
-		var new_target = ray_cast.cast_to - dir * p.hook_fire_speed
-		shooting = false
-		hooking = false
-		ray_cast.enabled = false
-	"""
+			retracting = true
+	elif retracting:
+		new_target = ray_cast.cast_to - dir * (p.hook_fire_speed / 1)
+		if new_target.length() < 100:
+			ray_cast.enabled = false
+			shooting = false
+	ray_cast.cast_to = new_target
+	target_pos = p.position + ray_cast.cast_to
 	"""
 	if((!m_NewHook && distance(m_Pos, NewPos) > m_Tuning.m_HookLength) || (m_NewHook && distance(m_HookTeleBase, NewPos) > m_Tuning.m_HookLength))
 	{
@@ -126,6 +125,28 @@ func pull_by_tw():
 	
 		
 	# handle hook influence
+	if target_node is Cube:
+		var cube = target_node
+		var distance = (pb.position - cube.position).length()
+		
+		if(distance > p.physical_size * 3.5):
+			var hook_accel = p.hook_drag_acceleration * (distance / p.hook_length)
+			var drag_speed = p.hook_drag_speed * 128
+
+			# add force to the hooked player
+			var tmp: Vector2
+			tmp = hook_accel * -pull_dir * 1.5 * 128
+			tmp.x = clamp(tmp.x, -drag_speed, drag_speed)
+			tmp.y = clamp(tmp.y, -drag_speed, drag_speed)
+			print(tmp.y)
+			cube.velocity += tmp
+
+			# add a little bit force to the guy who has the grip
+			tmp /= 6
+			tmp.x = clamp(tmp.x, -drag_speed, drag_speed)
+			tmp.y = clamp(tmp.y, -drag_speed, drag_speed)
+			p.velocity += tmp
+
 	"""
 	if(!m_HookHitDisabled && m_HookedPlayer == i && m_Tuning.m_PlayerHooking):
 		if(Distance > PhysicalSize() * 1.50f) # TODO: fix tweakable variable
@@ -145,6 +166,7 @@ func pull_by_tw():
 		}
 	}
 	"""
+
 
 func draw_hook() -> void:
 	draw_line(pb.position, target_pos, Color(0.5, 0.5, 0.5), 5)
