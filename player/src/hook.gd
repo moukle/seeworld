@@ -4,24 +4,24 @@ class_name Hook
 # refs
 onready var pb: KinematicBody2D = get_node("%Body")
 onready var p: Player = get_node("../..")
+onready var ray_cast: RayCast2D
 
+# state vars
 var hooking: bool = false
 var shooting: bool = false
 var retracting: bool = false
 var connected: bool = false
 
+# where the raycast hit
 var target_pos: Vector2
 var target_node: Node
 
-
+# mouse click direction
 var dir: Vector2
 
-onready var ray_cast: RayCast2D
-
-# clean up vars
-var remove_anchor: bool = false
-var remove_joint: bool = false
-var remove_head: bool = false
+#
+# physics
+#
 
 func _physics_process(delta):
 	if p.hook and (not hooking or shooting):
@@ -31,23 +31,13 @@ func _physics_process(delta):
 	elif connected:
 		if not target_node.is_in_group("TileMap"):
 			target_pos = target_node.position
-		# pull_by_interpolation()
-		# pull_by_joint()
-		pull_by_tw()
-
-
-func _process(delta):
-	update()
-
-
-func _draw():
-	if connected or shooting:
-		draw_hook()
+		pull()
 
 
 func shoot_hook():
-	# init
 	var new_target: Vector2
+
+	# init hook / raycast
 	if not shooting:
 		dir = p.mouse_direction
 		shooting = true
@@ -58,28 +48,27 @@ func shoot_hook():
 		ray_cast.enabled = true
 		new_target = dir * 1.5 * p.physical_size;
 		add_child(ray_cast)
+
+	# hook is shooting forward!
 	elif shooting and not retracting:
 		new_target = ray_cast.cast_to + dir * p.hook_fire_speed
 		if new_target.length() > p.hook_length:
 			new_target = dir * p.hook_length
 			retracting = true
+
+	# max length reached, thus retracting
 	elif retracting:
-		new_target = ray_cast.cast_to - dir * (p.hook_fire_speed / 1)
+		new_target = ray_cast.cast_to - dir * p.hook_fire_speed
 		if new_target.length() < 100:
 			ray_cast.enabled = false
 			shooting = false
+
+	# update raycast to new length
 	ray_cast.cast_to = new_target
-	target_pos = p.position + ray_cast.cast_to
-	"""
-	if((!m_NewHook && distance(m_Pos, NewPos) > m_Tuning.m_HookLength) || (m_NewHook && distance(m_HookTeleBase, NewPos) > m_Tuning.m_HookLength))
-	{
-		m_HookState = HOOK_RETRACT_START;
-		NewPos = m_Pos + normalize(NewPos - m_Pos) * m_Tuning.m_HookLength;
-		m_Reset = true;
-	}
-	"""
-		
 	ray_cast.position = pb.position
+
+	# for tracking the current hook
+	target_pos = p.position + ray_cast.cast_to
 	
 	# found target
 	if ray_cast.is_colliding():
@@ -91,14 +80,12 @@ func shoot_hook():
 
 
 func unhook():
-	#remove_childs()
-	remove_child(ray_cast)
 	hooking = false
 	shooting = false
 	connected = false
 
 
-func pull_by_tw():
+func pull():
 	var hook_drag_accel = 300
 	var hook_drag_speed = 1500
 	var pull_dir = (target_pos - pb.position).normalized()
@@ -147,25 +134,18 @@ func pull_by_tw():
 			tmp.y = clamp(tmp.y, -drag_speed, drag_speed)
 			p.velocity += tmp
 
-	"""
-	if(!m_HookHitDisabled && m_HookedPlayer == i && m_Tuning.m_PlayerHooking):
-		if(Distance > PhysicalSize() * 1.50f) # TODO: fix tweakable variable
-		{
-			float HookAccel = m_Tuning.m_HookDragAccel * (Distance / m_Tuning.m_HookLength);
-			float DragSpeed = m_Tuning.m_HookDragSpeed;
 
-			vec2 Temp;
-			# add force to the hooked player
-			Temp.x = SaturatedAdd(-DragSpeed, DragSpeed, pCharCore->m_Vel.x, HookAccel * Dir.x * 1.5f);
-			Temp.y = SaturatedAdd(-DragSpeed, DragSpeed, pCharCore->m_Vel.y, HookAccel * Dir.y * 1.5f);
-			pCharCore->m_Vel = ClampVel(pCharCore->m_MoveRestrictions, Temp);
-			# add a little bit force to the guy who has the grip
-			Temp.x = SaturatedAdd(-DragSpeed, DragSpeed, m_Vel.x, -HookAccel * Dir.x * 0.25f);
-			Temp.y = SaturatedAdd(-DragSpeed, DragSpeed, m_Vel.y, -HookAccel * Dir.y * 0.25f);
-			m_Vel = ClampVel(m_MoveRestrictions, Temp);
-		}
-	}
-	"""
+#
+# drawing
+#
+
+func _process(delta):
+	update()
+
+
+func _draw():
+	if connected or shooting:
+		draw_hook()
 
 
 func draw_hook() -> void:

@@ -30,7 +30,6 @@ func jump():
 
 	# air jump
 	elif p.jump and p.has_double_jump:
-		print("bla")
 		p.has_double_jump = false
 		p.velocity.y = p.air_jump_speed
 

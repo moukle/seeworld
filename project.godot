@@ -19,11 +19,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://player/src/hook.gd"
 }, {
-"base": "Node2D",
-"class": "Hook2",
-"language": "GDScript",
-"path": "res://player/src/hook_rb-head.gd"
-}, {
 "base": "Node",
 "class": "Map",
 "language": "GDScript",
@@ -42,7 +37,6 @@ _global_script_classes=[ {
 _global_script_class_icons={
 "Cube": "",
 "Hook": "",
-"Hook2": "",
 "Map": "",
 "Movement": "",
 "Player": ""

@@ -29,6 +29,7 @@ var mouse_direction: Vector2
 var velocity = Vector2.ZERO
 var has_double_jump: bool = true
 
+
 func _process(delta):
 	set_position(physicalBody.position)
 
